@@ -43,13 +43,21 @@ if all_dataframes:
         aligned_dataframes.append(aligned_df)
         print(f"Aligned DataFrame {idx + 1}/{len(all_dataframes)} with shape: {aligned_df.shape}")
     
-    print("Combining all aligned DataFrames...")
-    combined_df = pd.concat(aligned_dataframes, ignore_index=True)
-    print("Combined DataFrame shape:", combined_df.shape)
-    print("Combined DataFrame preview:")
-    print(combined_df.head())
-    # Optionally, save the combined DataFrame to a CSV file for easier use later
-    combined_df.to_csv('combined_GSS_data.csv', index=False)
-    print("Combined DataFrame saved to 'combined_GSS_data.csv'")
+    print("Combining all aligned DataFrames one by one...")
+    try:
+        combined_df = aligned_dataframes[0]
+        for idx in range(1, len(aligned_dataframes)):
+            print(f"Concatenating DataFrame {idx + 1}/{len(aligned_dataframes)}")
+            combined_df = pd.concat([combined_df, aligned_dataframes[idx]], ignore_index=True)
+            print(f"Current combined DataFrame shape: {combined_df.shape}")
+        
+        print("Final Combined DataFrame shape:", combined_df.shape)
+        print("Combined DataFrame preview:")
+        print(combined_df.head())
+        # Optionally, save the combined DataFrame to a CSV file for easier use later
+        combined_df.to_csv('combined_GSS_data.csv', index=False)
+        print("Combined DataFrame saved to 'combined_GSS_data.csv'")
+    except Exception as e:
+        print(f"Error during concatenation: {e}")
 else:
     print("No DataFrames were loaded, nothing to combine.")
