@@ -27,13 +27,29 @@ if df is not None:
         variables = ['stress', 'joblose', 'satfin']
 
         # Replace inapplicable and non-answer values with NaN for analysis
-        df_subset = df[variables]
+        df_subset = df[variables].replace({
+            r'\.i:.*': np.nan, 
+            r'\.n:.*': np.nan, 
+            r'\.d:.*': np.nan, 
+            r'\.s:.*': np.nan,
+            r'\.y:.*': np.nan
+        }, regex=True)
 
-        # Check the unique values present in each of the selected columns and count them
-        for variable in variables:
-            unique_values = df_subset[variable].value_counts(dropna=False)
-            print(f"Unique values for '{variable}' and their counts:")
-            print(unique_values)
+        # Drop rows with any NaN values to only keep rows with complete data
+        df_filtered = df_subset.dropna()
+
+        # Display the filtered data
+        print("Filtered DataFrame preview:")
+        print(df_filtered.head())
+
+        # Create a contingency table for the three variables
+        contingency_table = pd.crosstab([df_filtered['stress'], df_filtered['joblose']], df_filtered['satfin'])
+        print("Contingency Table:")
+        print(contingency_table)
+
+        # Save the contingency table to a CSV file for reference
+        contingency_table.to_csv('GSS_contingency_table.csv')
+        print("Contingency table saved to 'GSS_contingency_table.csv'")
     except KeyError as e:
         print(f"Error: Some variables are not found in the DataFrame: {e}")
     except Exception as e:
