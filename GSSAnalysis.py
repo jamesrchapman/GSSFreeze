@@ -4,13 +4,27 @@ import json
 file_path = 'GSS.json'
 
 
-# Read the file as a string and replace single quotes with double quotes
 with open(file_path, 'r') as file:
-    raw_data = file.read().replace("'", '"')  # Replaces single quotes with double quotes
+    # Read the initial chunk of data (adjust size if necessary)
+    snippet = file.read(10000)  # This reads only a portion to find the initial keys
 
-# Load the corrected JSON data
-try:
-    data = json.loads(raw_data)
-    print("Top-level keys in the JSON data:", data.keys())
-except json.JSONDecodeError as e:
-    print("Error decoding JSON:", e)
+print(snippet)
+# Manually search for top-level keys using regular expressions
+import re
+
+# Regular expression to match JSON-style keys in dictionaries
+pattern = r'"([^"]+)":'
+
+# Find all matches, which correspond to keys in the JSON dictionary
+keys = re.findall(pattern, snippet)
+
+# Remove duplicates in case some keys repeat within the snippet
+unique_keys = list(dict.fromkeys(keys))
+
+# Save these keys to a .dat file if they look reasonable
+if unique_keys:
+    with open('labels.dat', 'w') as label_file:
+        label_file.write("\n".join(unique_keys))
+    print("Extracted labels saved to labels.dat:", unique_keys)
+else:
+    print("No keys found, or snippet was too short to capture structure.")
