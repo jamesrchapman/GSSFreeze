@@ -4,6 +4,9 @@ import numpy as np
 import os
 import ast
 
+from scipy.stats import spearmanr
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Define the path to the CSV file
 gss_csv_file = 'GSS_cumulative_data.csv'
