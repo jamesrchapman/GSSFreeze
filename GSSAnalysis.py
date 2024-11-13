@@ -2,45 +2,46 @@ import json
 import pandas as pd
 import os
 import zipfile
+import numpy as np
 
-# Replace 'your_file.json' with the path to your JSON file
-file_path = 'GSS.json'
-labels = ['year', 'id_', 'hrs1', 'hrs2', 'wrkslf', 'occ10', 'sphrs1', 'sphrs2', 'happy', 'hapmar', 'joblose', 'satjob', 'class_', 'satfin', 'finalter', 'tvhours', 'wrktype', 'yearsjob', 'waypaid', 'wrksched', 'moredays', 'mustwork', 'wrkhome', 'whywkhme', 'famwkoff', 'wkvsfam', 'famvswk', 'hrsrelax', 'secondwk', 'learnnew', 'workfast', 'overwork', 'respect', 'trustman', 'proudemp', 'supcares', 'condemnd', 'promtefr', 'cowrkint', 'jobsecok', 'manvsemp', 'trynewjb', 'health1', 'mntlhlth', 'spvtrfair', 'slpprblm', 'satjob1', 'hyperten', 'stress', 'realinc', 'ballot', 'sei10']
-
-# Define the path to the STATA folder and the new directory to extract files
 stata_folder = 'STATA'
 unzip_directory = 'Unzipped_GSS'
 
-# Create the new directory if it doesn't exist
-if not os.path.exists(unzip_directory):
-    os.makedirs(unzip_directory)
+# Read all .dta files into a pandas DataFrame
+all_dataframes = []
 
-# Loop through each compressed zip file in the STATA folder
-for filename in os.listdir(stata_folder):
-    if filename.endswith('.zip'):
-        zip_path = os.path.join(stata_folder, filename)
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            # Extract all .dta files to the new directory
-            for file in zip_ref.namelist():
-                if file.endswith('.dta'):
-                    zip_ref.extract(file, unzip_directory)
+for filename in os.listdir(unzip_directory):
+    if filename.endswith('.dta'):
+        try:
+            file_path = os.path.join(unzip_directory, filename)
+            print(f"Processing file: {filename}")
+            
+            # Extract the year from the filename if possible
+            year = filename.split('GSS')[-1].split('.dta')[0]
+            print(f"Extracted year: {year}")
 
-print(f"All .dta files have been extracted to the '{unzip_directory}' directory.")
+            # Read the Stata file without converting categoricals to avoid errors
+            df = pd.read_stata(file_path, convert_categoricals=False)
+            print(f"Loaded DataFrame shape: {df.shape}")
 
-# Read the .dat file with constant spacing between values
-dat_file_path = 'GSS.dat'
+            # Add year column to the DataFrame
+            df['year'] = year
+            all_dataframes.append(df)
+        
+        except Exception as e:
+            print(f"Error processing file {filename}: {e}")
 
-# Read the .dat file into a pandas DataFrame with whitespace as separator
-df = pd.read_csv(dat_file_path, delim_whitespace=True, header=None)
-
-# Assign the labels to the DataFrame columns after reading in the data
-if len(df.columns) == len(labels):
-    df.columns = labels
+# Combine all DataFrames into one if there are any DataFrames to combine
+if all_dataframes:
+    # Align all DataFrames by reindexing to handle different shapes
+    all_columns = sorted(set().union(*(df.columns for df in all_dataframes)))
+    aligned_dataframes = [df.reindex(columns=all_columns, fill_value=np.nan) for df in all_dataframes]
+    
+    combined_df = pd.concat(aligned_dataframes, ignore_index=True)
+    # Display the combined DataFrame to verify the data
+    print("Combined DataFrame shape:", combined_df.shape)
+    print(combined_df.head())
+    # Optionally, save the combined DataFrame to a CSV file for easier use later
+    combined_df.to_csv('combined_GSS_data.csv', index=False)
 else:
-    print(f"Warning: The number of columns in the data ({len(df.columns)}) does not match the number of labels ({len(labels)}). Adjusting labels may be required.")
-
-# Display the DataFrame to verify the data
-print(df.head())
-
-# Optionally, save the DataFrame to a CSV file for easier use later
-df.to_csv('output.csv', index=False)
+    print("No DataFrames were loaded, nothing to combine.")
