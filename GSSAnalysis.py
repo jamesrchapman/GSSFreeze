@@ -1,30 +1,17 @@
 import json
+import pandas as pd
 
 # Replace 'your_file.json' with the path to your JSON file
 file_path = 'GSS.json'
+labels=['year', 'id_', 'hrs1', 'hrs2', 'wrkslf', 'occ10', 'sphrs1', 'sphrs2', 'happy', 'hapmar', 'joblose', 'satjob', 'class_', 'satfin', 'finalter', 'tvhours', 'wrktype', 'yearsjob', 'waypaid', 'wrksched', 'moredays', 'mustwork', 'wrkhome', 'whywkhme', 'famwkoff', 'wkvsfam', 'famvswk', 'hrsrelax', 'secondwk', 'learnnew', 'workfast', 'overwork', 'respect', 'trustman', 'proudemp', 'supcares', 'condemnd', 'promtefr', 'cowrkint', 'jobsecok', 'manvsemp', 'trynewjb', 'health1', 'mntlhlth', 'spvtrfair', 'slpprblm', 'satjob1', 'hyperten', 'stress', 'realinc', 'ballot', 'sei10']
+dat_file_path = 'GSS.dat'
 
 
-with open(file_path, 'r') as file:
-    # Read the initial chunk of data (adjust size if necessary)
-    snippet = file.read(10000)  # This reads only a portion to find the initial keys
+# Read the .dat file into a pandas DataFrame with whitespace as separator
+df = pd.read_csv(dat_file_path, delim_whitespace=True, names=labels)
 
-print(snippet)
-# Manually search for top-level keys using regular expressions
-import re
+# Display the DataFrame to verify the data
+print(df.head())
 
-# Regular expression to match JSON-style keys in dictionaries
-pattern = r'"([^"]+)":'
-
-# Find all matches, which correspond to keys in the JSON dictionary
-keys = re.findall(pattern, snippet)
-
-# Remove duplicates in case some keys repeat within the snippet
-unique_keys = list(dict.fromkeys(keys))
-
-# Save these keys to a .dat file if they look reasonable
-if unique_keys:
-    with open('labels.dat', 'w') as label_file:
-        label_file.write("\n".join(unique_keys))
-    print("Extracted labels saved to labels.dat:", unique_keys)
-else:
-    print("No keys found, or snippet was too short to capture structure.")
+# Optionally, save the DataFrame to a CSV file for easier use later
+df.to_csv('output.csv', index=False)
