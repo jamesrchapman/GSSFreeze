@@ -1,63 +1,43 @@
 import json
 import pandas as pd
 import os
-import zipfile
-import numpy as np
+import ast
 
-stata_folder = 'STATA'
-unzip_directory = 'Unzipped_GSS'
+# Define the path to the CSV file
+gss_csv_file = 'GSS_cumulative_data.csv'
 
-# Read all .dta files into a pandas DataFrame
-all_dataframes = []
+# Load the CSV file into a pandas DataFrame
+try:
+    print("Attempting to load the CSV file...")
+    df = pd.read_csv(gss_csv_file)
+    print("Successfully loaded GSS cumulative data.")
+    print("DataFrame preview:")
+    print(df.head())
+except Exception as e:
+    print(f"Error loading CSV file: {e}")
+    df = None
 
-for filename in os.listdir(unzip_directory):
-    if filename.endswith('.dta'):
-        try:
-            file_path = os.path.join(unzip_directory, filename)
-            print(f"Processing file: {filename}")
-            
-            # Extract the year from the filename if possible
-            year = filename.split('GSS')[-1].split('.dta')[0]
-            print(f"Extracted year: {year}")
-
-            # Read the Stata file without converting categoricals to avoid errors
-            df = pd.read_stata(file_path, convert_categoricals=False)
-            print(f"Loaded DataFrame shape: {df.shape}")
-
-            # Add year column to the DataFrame
-            df['year'] = year
-            all_dataframes.append(df)
-        
-        except Exception as e:
-            print(f"Error processing file {filename}: {e}")
-
-# Combine all DataFrames into one if there are any DataFrames to combine
-# Combine all DataFrames into one if there are any DataFrames to combine
-if all_dataframes:
-    print("Starting to align all DataFrames...")
-    # Align all DataFrames by reindexing to handle different shapes
-    all_columns = sorted(set().union(*(df.columns for df in all_dataframes)))
-    aligned_dataframes = []
-    for idx, df in enumerate(all_dataframes):
-        aligned_df = df.reindex(columns=all_columns, fill_value=np.nan)
-        aligned_dataframes.append(aligned_df)
-        print(f"Aligned DataFrame {idx + 1}/{len(all_dataframes)} with shape: {aligned_df.shape}")
-    
-    print("Combining all aligned DataFrames one by one...")
+# Generate descriptive statistics for selected variables if DataFrame is available
+if df is not None:
     try:
-        combined_df = aligned_dataframes[0]
-        for idx in range(1, len(aligned_dataframes)):
-            print(f"Concatenating DataFrame {idx + 1}/{len(aligned_dataframes)}")
-            combined_df = pd.concat([combined_df, aligned_dataframes[idx]], ignore_index=True)
-            print(f"Current combined DataFrame shape: {combined_df.shape}")
+        print("Generating descriptive statistics for selected variables...")
+        # List of variables to examine
+        variables = [
+            'year', 'hrs1', 'hrs2', 'wrkslf', 'occ10', 'happy', 'joblose', 'satjob', 'class_', 
+            'satfin', 'tvhours', 'stress', 'realinc', 'mntlhlth'
+        ]
+        # Select only the relevant columns and drop missing values
+        df_subset = df[variables].copy()
+        descriptive_table = df_subset.describe(include='all')
         
-        print("Final Combined DataFrame shape:", combined_df.shape)
-        print("Combined DataFrame preview:")
-        print(combined_df.head())
-        # Optionally, save the combined DataFrame to a CSV file for easier use later
-        combined_df.to_csv('combined_GSS_data.csv', index=False)
-        print("Combined DataFrame saved to 'combined_GSS_data.csv'")
+        # Display the descriptive statistics
+        print("Descriptive Statistics Table:")
+        print(descriptive_table)
+        
+        # Optionally, save the descriptive statistics to a CSV file for reference
+        descriptive_table.to_csv('GSS_descriptive_statistics.csv')
+        print("Descriptive statistics saved to 'GSS_descriptive_statistics.csv'")
+    except KeyError as e:
+        print(f"Error: Some variables are not found in the DataFrame: {e}")
     except Exception as e:
-        print(f"Error during concatenation: {e}")
-else:
-    print("No DataFrames were loaded, nothing to combine.")
+        print(f"Error generating descriptive statistics: {e}")
