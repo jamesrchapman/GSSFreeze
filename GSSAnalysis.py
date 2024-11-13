@@ -42,14 +42,24 @@ if df is not None:
         print("Filtered DataFrame preview:")
         print(df_filtered.head())
 
-        # Create a contingency table for the three variables
-        contingency_table = pd.crosstab([df_filtered['stress'], df_filtered['joblose']], df_filtered['satfin'])
-        print("Contingency Table:")
-        print(contingency_table)
+        # Perform Spearman correlation analysis on the filtered data
+        print("Calculating Spearman correlation between selected variables...")
+        spearman_corr, p_value = spearmanr(df_filtered, axis=0)
+        spearman_corr_df = pd.DataFrame(spearman_corr, index=variables, columns=variables)
+        print("Spearman Correlation Matrix:")
+        print(spearman_corr_df)
 
-        # Save the contingency table to a CSV file for reference
-        contingency_table.to_csv('GSS_contingency_table.csv')
-        print("Contingency table saved to 'GSS_contingency_table.csv'")
+        # Save the Spearman correlation matrix to a CSV file for reference
+        spearman_corr_df.to_csv('GSS_spearman_correlation.csv')
+        print("Spearman correlation matrix saved to 'GSS_spearman_correlation.csv'")
+
+        # Plot the Spearman correlation matrix
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(spearman_corr_df, annot=True, cmap='coolwarm', linewidths=0.5, fmt='.2f')
+        plt.title('Spearman Correlation Matrix for Selected Variables')
+        plt.savefig('GSS_spearman_correlation_heatmap.png')
+        plt.show()
+        print("Spearman correlation heatmap saved to 'GSS_spearman_correlation_heatmap.png'")
     except KeyError as e:
         print(f"Error: Some variables are not found in the DataFrame: {e}")
     except Exception as e:
