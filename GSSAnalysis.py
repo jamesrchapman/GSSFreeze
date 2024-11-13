@@ -4,6 +4,7 @@ import numpy as np
 import os
 import ast
 
+
 # Define the path to the CSV file
 gss_csv_file = 'GSS_cumulative_data.csv'
 
@@ -27,9 +28,11 @@ if df is not None:
 
         # Iterate through the DataFrame to check numeric values and calculate percentage
         for column in df.columns:
-            total_count = len(df[column])
-            numeric_count = df[column].apply(lambda x: pd.to_numeric(x, errors='coerce')).notna().sum()
-            numeric_percentage = (numeric_count / total_count) * 100
+            # Filter out inapplicable values before counting
+            filtered_column = df[column][~df[column].astype(str).str.contains(r'\.i:', na=False)]
+            total_count = len(filtered_column)
+            numeric_count = filtered_column.apply(lambda x: pd.to_numeric(x, errors='coerce')).notna().sum()
+            numeric_percentage = (numeric_count / total_count) * 100 if total_count > 0 else 0
             numeric_percentages[column] = numeric_percentage
 
             # Print percentage of numeric values
@@ -37,7 +40,7 @@ if df is not None:
 
             # Create a version of the DataFrame with only numeric values for each column
             if numeric_percentage > 0:  # Only process columns that have some numeric data
-                numeric_data = pd.to_numeric(df[column], errors='coerce')  # Convert non-numeric to NaN
+                numeric_data = pd.to_numeric(filtered_column, errors='coerce')  # Convert non-numeric to NaN
                 numeric_dataframes.append(numeric_data)
 
         # Combine numeric columns into a new DataFrame
@@ -53,10 +56,11 @@ if df is not None:
             'year', 'hrs1', 'hrs2', 'wrkslf', 'occ10', 'happy', 'joblose', 'satjob', 'class_', 
             'satfin', 'tvhours', 'stress', 'realinc', 'mntlhlth'
         ]
-        # Select only the relevant columns and drop rows with NaN values
-        df_subset = df[variables].dropna()
+
+        # Select only the relevant columns and drop rows with NaN values and inapplicable values
+        df_subset = df[variables].replace({r'\.i:.*': np.nan, r'\.n:.*': np.nan}, regex=True).dropna()
         descriptive_table = df_subset.describe(include='all')
-        
+               
         # Display the descriptive statistics
         print("Descriptive Statistics Table:")
         print(descriptive_table)
