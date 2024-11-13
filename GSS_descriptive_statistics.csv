@@ -1,0 +1,12 @@
+,year,hrs1,hrs2,wrkslf,occ10,happy,joblose,satjob,class_,satfin,tvhours,stress,realinc,mntlhlth
+count,72390.0,72390,72390,72390,72390,72390,72390,72390,72390,72390,72390,72390,72390.0,72390
+unique,,94,65,6,537,7,9,8,9,7,29,10,,35
+top,,.i:  Inapplicable,.i:  Inapplicable,Someone else,.i:  Inapplicable,Pretty happy,.i:  Inapplicable,Very satisfied,Middle class,More or less satisfied,.i:  Inapplicable,.y:  Not available in this year,,.i:  Inapplicable
+freq,,30530,70851,60504,3707,37813,47126,24718,31014,29987,28105,38584,,58820
+mean,1997.7155408205554,,,,,,,,,,,,29114.358853943293,
+std,15.10999534176939,,,,,,,,,,,,30331.76737638927,
+min,1972.0,,,,,,,,,,,,-100.0,
+25%,1985.0,,,,,,,,,,,,8417.5,
+50%,1998.0,,,,,,,,,,,,21299.0,
+75%,2010.0,,,,,,,,,,,,38373.75,
+max,2022.0,,,,,,,,,,,,162607.0,
