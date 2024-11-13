@@ -32,16 +32,24 @@ for filename in os.listdir(unzip_directory):
             print(f"Error processing file {filename}: {e}")
 
 # Combine all DataFrames into one if there are any DataFrames to combine
+# Combine all DataFrames into one if there are any DataFrames to combine
 if all_dataframes:
+    print("Starting to align all DataFrames...")
     # Align all DataFrames by reindexing to handle different shapes
     all_columns = sorted(set().union(*(df.columns for df in all_dataframes)))
-    aligned_dataframes = [df.reindex(columns=all_columns, fill_value=np.nan) for df in all_dataframes]
+    aligned_dataframes = []
+    for idx, df in enumerate(all_dataframes):
+        aligned_df = df.reindex(columns=all_columns, fill_value=np.nan)
+        aligned_dataframes.append(aligned_df)
+        print(f"Aligned DataFrame {idx + 1}/{len(all_dataframes)} with shape: {aligned_df.shape}")
     
+    print("Combining all aligned DataFrames...")
     combined_df = pd.concat(aligned_dataframes, ignore_index=True)
-    # Display the combined DataFrame to verify the data
     print("Combined DataFrame shape:", combined_df.shape)
+    print("Combined DataFrame preview:")
     print(combined_df.head())
     # Optionally, save the combined DataFrame to a CSV file for easier use later
     combined_df.to_csv('combined_GSS_data.csv', index=False)
+    print("Combined DataFrame saved to 'combined_GSS_data.csv'")
 else:
     print("No DataFrames were loaded, nothing to combine.")
