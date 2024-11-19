@@ -2,3 +2,6 @@ GSS_cumulative_data.csv
 GSS_cumulative_data.db
 output.csv
 post_processing_output.json
+result/
+STATA/
+Unzipped_GSS/
