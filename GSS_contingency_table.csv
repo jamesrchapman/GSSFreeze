@@ -1,21 +1,3 @@
-stress,joblose,More or less satisfied,Not satisfied at all,Pretty well satisfied
-Always,Fairly likely,23,39,9
-Always,Not likely,185,149,116
-Always,Not too likely,77,94,32
-Always,Very likely,17,34,6
-Hardly ever,Fairly likely,23,13,10
-Hardly ever,Not likely,401,180,314
-Hardly ever,Not too likely,167,103,84
-Hardly ever,Very likely,22,24,15
-Never,Fairly likely,11,13,1
-Never,Not likely,150,78,138
-Never,Not too likely,37,26,31
-Never,Very likely,13,13,4
-Often,Fairly likely,51,48,18
-Often,Not likely,561,252,405
-Often,Not too likely,272,163,109
-Often,Very likely,21,41,8
-Sometimes,Fairly likely,101,79,19
-Sometimes,Not likely,1092,485,748
-Sometimes,Not too likely,498,276,242
-Sometimes,Very likely,55,61,28
+version https://git-lfs.github.com/spec/v1
+oid sha256:cbfd618f15e5d77e6b8ed0b1a289dc7211621b84473c338dbeb3262359a9d84d
+size 725
