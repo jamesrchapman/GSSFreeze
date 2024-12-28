@@ -44,8 +44,15 @@ Working on G
 - if they fail I think it's technically an exploration, which can results in varied outcomes
 
 
-
-
+A' = k_1 * (App(T(t)) - A(t)) + k_2 * (B(t) - A(t))
+B' = k_3 * (A(t) - B(t))
+App(T) = W.T(t) or something
+App'(T) =
+ + ( alpha p(explore)p(explore fails)
+ + beta p(explore)p(explore succeeds) )* (1 + p(avoid)p(avoid fails))
+ # beta is negative, alpha's positive
+p(explore) = 1/(1+exp(k*(App - Thresh)))
+Thresh' = some values for probabilities of exploration/avoidance and results
 
 Issues:
 

@@ -37,3 +37,5 @@ plt.title('Vector Field of the Dynamical System with Equilibrium Point')
 plt.legend()
 plt.grid()
 plt.show()
+
+
